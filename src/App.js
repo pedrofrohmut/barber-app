@@ -1,8 +1,14 @@
 import React from "react"
-import { Text } from "react-native"
+import { NavigationContainer } from "@react-navigation/native"
+
+import MainStack from "./stacks/MainStack"
 
 const App = () => {
-  return <Text>Hello World!</Text>
+  return (
+    <NavigationContainer>
+      <MainStack />
+    </NavigationContainer>
+  )
 }
 
 export default App

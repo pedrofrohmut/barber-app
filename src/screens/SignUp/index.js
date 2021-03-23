@@ -1,12 +1,15 @@
-import React, { useState } from "react"
+import React, { useState, useContext } from "react"
 import { useNavigation } from "@react-navigation/native"
+import AsyncStorage from "@react-native-community/async-storage"
 
 import BarberLogo from "../../assets/barber.svg"
 import PersonIcon from "../../assets/person.svg"
 import EmailIcon from "../../assets/email.svg"
 import LockIcon from "../../assets/lock.svg"
 
+import Api from "../../Api"
 import SignInput from "../../components/SignInput"
+import { UserContext } from "../../contexts/UserContext"
 
 import {
   Container,
@@ -19,14 +22,39 @@ import {
 } from "./styles"
 
 const SignUp = () => {
-  const [nome, setNome] = useState("")
+  const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
+  const { dispatch: userDispatch } = useContext(UserContext)
+
   const navigation = useNavigation()
 
-  const onCustomButtonPress = () => {
-
+  const onCustomButtonPress = async () => {
+    if (name === "" || email === "" || password === "") {
+      alert("Preencha nome, email e senha")
+      return
+    }
+    let response = null
+    try {
+      response = await Api.signUp({ name, email, password })
+    } catch (err) {
+      alert(`Erro ao cadastrar usuario: ${err}`)
+      return
+    }
+    setName("")
+    setEmail("")
+    setPassword("")
+    await AsyncStorage.setItem("token", response.token)
+    userDispatch({
+      type: "SET_AVATAR",
+      payload: {
+        avatar: response.data.avatar
+      }
+    })
+    navigation.reset({
+      routes: [{ name: "MainTab" }]
+    })
   }
 
   const onSignMessageButtonPress = () => {
@@ -43,8 +71,8 @@ const SignUp = () => {
         <SignInput
           IconSvg={PersonIcon}
           placeholder="Digite seu nome"
-          value={nome}
-          onChangeText={(text) => setNome(text)}
+          value={name}
+          onChangeText={(text) => setName(text)}
         />
         <SignInput
           IconSvg={EmailIcon}

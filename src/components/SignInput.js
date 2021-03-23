@@ -20,6 +20,9 @@ const Input = styled.TextInput`
 `
 
 const SignInput = ({ IconSvg, placeholder, value, onChangeText, isPassword }) => {
+  if (!isPassword) {
+    isPassword = false
+  }
   return (
     <InputArea>
       <IconSvg width="24" height="24" fill="#268596" />

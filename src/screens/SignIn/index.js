@@ -1,11 +1,14 @@
-import React, { useState } from "react"
+import React, { useState, useContext } from "react"
 import { useNavigation } from "@react-navigation/native"
+import AsyncStorage from "@react-native-community/async-storage"
 
 import BarberLogo from "../../assets/barber.svg"
 import EmailIcon from "../../assets/email.svg"
 import LockIcon from "../../assets/lock.svg"
 
+import Api from "../../Api"
 import SignInput from "../../components/SignInput"
+import { UserContext } from "../../contexts/UserContext"
 
 import {
   Container,
@@ -21,10 +24,34 @@ const SignIn = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
+  const { dispatch: userDispatch } = useContext(UserContext)
+
   const navigation = useNavigation()
 
-  const onCustomButtonPress = () => {
-
+  const onCustomButtonPress = async () => {
+    if (email === "" || password === "") {
+      alert("Preencha email e senha")
+      return
+    }
+    let response = null
+    try {
+      response = await Api.signIn({ email, password })
+    } catch (err) {
+      alert(`Erro ao autenticar usuario: ${err}`)
+      return
+    }
+    setEmail("")
+    setPassword("")
+    await AsyncStorage.setItem("token", response.token)
+    userDispatch({
+      type: "SET_AVATAR",
+      payload: {
+        avatar: response.data.avatar
+      }
+    })
+    navigation.reset({
+      routes: [{ name: "MainTab" }]
+    })
   }
 
   const onSignMessageButtonPress = () => {

@@ -1,3 +1,5 @@
+import AsyncStorage from "@react-native-community/async-storage"
+
 // const BASE_API = "https://api.b7web.com.br/devbarber/api"
 // const BASE_API = "http://127.0.0.1:5001/api"
 const BASE_API = "http://192.168.1.16:5001/api"
@@ -51,6 +53,26 @@ const Api = {
       return json
     } catch (err) {
       console.error(`Api.signUp: ${err}`)
+      throw err
+    }
+  },
+  getBarbers: async () => {
+    try {
+      const token = await AsyncStorage.get("token")
+      if (!token) {
+        return null
+      }
+      const response = await fetch(`${BASE_API}/barbers`, {
+        method: "GET",
+        headers: {
+          Accept: "Application/json",
+          "Content-Type": "Application/json"
+        },
+        body: JSON.stringify({ token })
+      })
+      const json = await response.json()
+      return json
+    } catch (err) {
       throw err
     }
   }

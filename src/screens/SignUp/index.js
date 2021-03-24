@@ -45,6 +45,10 @@ const SignUp = () => {
     setName("")
     setEmail("")
     setPassword("")
+    if (!response || !response.token) {
+      alert("Crazy system has neither response nor token")
+      return
+    }
     await AsyncStorage.setItem("token", response.token)
     userDispatch({
       type: "SET_AVATAR",

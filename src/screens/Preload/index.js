@@ -16,8 +16,8 @@ const Preload = () => {
 
   const checkToken = async () => {
     const token = await AsyncStorage.getItem("token")
-    if (token) {
-      navigation.navigate("MainTab")
+    if (!token) {
+      navigation.navigate("SignIn")
       return
     }
     const response = await Api.checkToken({ token })
